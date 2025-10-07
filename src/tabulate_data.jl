@@ -22,7 +22,8 @@ function tabulate_data(fol::String;
   flag_media_info=false,
   title=nothing,
   fname2timestamp_func = nothing,
-  flag_recursive::Bool = false
+  flag_recursive::Bool = false,
+  verbose = true
   )
 
   # Set default title if not provided
@@ -112,8 +113,10 @@ function tabulate_data(fol::String;
             end
             print(output_stream, dt)
           catch
-            @error("cant convert this time: \t$fname_time")
-            dt = missing
+            if verbose
+              @error("cant convert this time: \t$fname_time")
+              dt = missing
+            end
           end
 
           # Add media info columns if enabled
