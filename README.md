@@ -17,7 +17,7 @@ A Julia package for data repository management. It provides tools to:
 using DataSort0
 
 files = traverse_data("/path/to/data")
-df = tabulate_data(files)
+df = tabulate_data0(files)
 sum = summarize_data(df)
 # To update an existing database:
 updated_df = update_database(old_df, df)

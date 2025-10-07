@@ -1,5 +1,5 @@
 """
-tabulate_data(files::Vector{String}) -> DataFrame
+tabulate_data0(files::Vector{String}) -> DataFrame
 
 Tabulate file metadata for a list of files.
 """
