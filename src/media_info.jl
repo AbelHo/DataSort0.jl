@@ -2,6 +2,9 @@ using FFMPEG
 using JSON
 # using Glob
 
+vidtypes = [".mkv",".MP4",".avi",".mp4",".mov"]
+autypes = [".wav",".ogg",".mat",".flac",".mp3"]
+
 function get_fps(file::AbstractString, streamno::Integer = 0)
     streamno >= 0 || throw(ArgumentError("streamno must be non-negative"))
     fps_strs = FFMPEG.exe(

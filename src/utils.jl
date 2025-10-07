@@ -1,5 +1,12 @@
 import FileIO, FileIO.load
 
+simple_fname2dt(aufname) = DateTime(basename(aufname)[1:17], dateformat"yyyymmdd_H.M.S")
+fname2dt_dashdot(aufname) = DateTime(basename(aufname)[1:19], dateformat"yyyy-mm-dd_H.M.S")
+fname2dt_date_time(aufname; skip_front=0) = DateTime(basename(aufname)[(1:15) .+ skip_front], dateformat"yyyymmdd_HHMMSS")
+fname2dt_soundtrap(aufname) = DateTime("20"*basename(aufname)[findfirst(".", basename(aufname))[1] .+ (1:12)], dateformat"yyyymmddHHMMSS")
+fname2dt_zoomf6(aufname) = DateTime(get_ffmpeg_metadata(aufname)["format"]["tags"]["date"] *"T"* get_ffmpeg_metadata(aufname)["format"]["tags"]["creation_time"]) #, dateformat"yyyy-mm-ddTHH:MM:SS")
+
+
 showall(x) = show(stdout, "text/plain", x)
 
 function skiphiddenfiles(list)
