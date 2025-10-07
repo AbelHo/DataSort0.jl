@@ -1,0 +1,14 @@
+name = "DataSort0"
+uuid = "1728ee9c-15fa-4db7-9b75-8980fb16bceb"
+license = "MIT"
+authors = ["Abel Ho <your@email.com>"]
+description = "A Julia package for data repository management: traversing directories, tabulating, summarizing, and updating data collections."
+version = "0.0.1"
+
+[deps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+DataFrames = "1.8.0"
+Test = "1.11.0"
