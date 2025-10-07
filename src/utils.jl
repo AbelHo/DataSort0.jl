@@ -54,19 +54,7 @@ function process_files(folname; func=(a,b)->x, arg=nothing, no_overwrite_func=no
     arg isa String && mkpath(arg)
     for (root, dirs, files) in walkdir(folname)
         # println("Directories in $root")
-        # for dir in dirs
-        #     println(joinpath(root, dir)) # path to directories
-        #     try
-        #         func(joinpath(root, dir), joinpath(arg, dir); no_overwrite_func=no_overwrite_func)
-        #     catch err
-        #         try 
-        #             func(joinpath(root, dir), joinpath(arg, dir))
-        #         catch err
-        #             @error exception=(err, catch_backtrace())
-        #             @error (joinpath(root, dir), joinpath(arg, dir))
-        #         end
-        #     end
-        # end
+        
         # println("Files in $root")
         for file in files
             println(joinpath(root, file)) # path to files
@@ -84,6 +72,31 @@ function process_files(folname; func=(a,b)->x, arg=nothing, no_overwrite_func=no
         end
     end
 end
+
+# could be the same as this function: process_files_hierarchy_with_func, so temporarily commented out
+# function process_files_new(folname; func=(a,b)->x, arg=nothing, no_overwrite_func=nothing)
+#     arg isa String && mkpath(arg)
+#     for entry in readdir(folname; join=true)
+#         if isdir(entry)
+#             # Recursively call process_files for subdirectories, inheriting parameters
+#             sub_arg = arg === nothing ? nothing : joinpath(arg, basename(entry))
+#             process_files(entry; func=func, arg=sub_arg, no_overwrite_func=no_overwrite_func)
+#         else
+#             println(entry) # path to file
+#             dest = arg === nothing ? nothing : joinpath(arg, basename(entry))
+#             try
+#                 func(entry, dest; no_overwrite_func=no_overwrite_func)
+#             catch err
+#                 try
+#                     func(entry, dest)
+#                 catch err
+#                     @error exception=(err, catch_backtrace())
+#                     @error (entry, dest)
+#                 end
+#             end
+#         end
+#     end
+# end
 
 function replace_suffix(src::AbstractString, suffix, replacement=""; preview=true, kwargs...)
     if isdir(src) 

@@ -11,6 +11,6 @@ include("summarize.jl")
 include("update.jl")
 
 include("tabulate_data.jl")
-export tabulate_data, find_closest_row, skiphiddenfiles
+export tabulate_data, find_closest_row, skiphiddenfiles, process_files
 
 end # module
