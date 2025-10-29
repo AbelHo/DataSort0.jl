@@ -10,8 +10,8 @@ tabulate_data("/Users/aa/Documents/data/calf"; filetype=:media, flag_recursive=t
 """
 function tabulate_data(fol::String;
 
-  output = stdout, filetype::Union{String,Symbol} = "flac",
-  fmt_str::String = "yyyymmdd_HHMMSS",
+  output = stdout, filetype::Union{String,Symbol} = ".flac",
+  fmt_str::String = "yyyymmdd_HHMMSS", year_add=Year(DateTime(now())) ÷ 100 * 100,
   fname_fmt = "end",
   separator = ",", postfix::String = "",
   flag_filesize=false,
@@ -51,7 +51,7 @@ function tabulate_data(fol::String;
         @info("Creating new file: $output")
         println(output_stream, title_final)
       else
-        # @warn("File $output already exists. Use flag_overwrite=true to overwrite.")
+        @warn("File $output already exists. appending to it... Use flag_overwrite=true to overwrite.")
         output_stream = open(output,"a")
       end
     end
@@ -87,6 +87,7 @@ function tabulate_data(fol::String;
             flag_normalmedia && print(output_stream, dur )
           catch
             @error("cant open this file: \t$file")
+            # @error(joinpath(root,file))
             print(output_stream, "-99999999" )
           end
           print(output_stream, "$separator")
@@ -107,8 +108,26 @@ function tabulate_data(fol::String;
             else
               if isnothing(fname2timestamp_func)
                 dt = DateTime(fname_time, fmt)
+                if occursin("yy", fmt_str) && !occursin("yyyy", fmt_str)
+                  dt += year_add
+                end
               else
-                dt = fname2timestamp_func(file)
+                # if is an array try all of them
+                if typeof(fname2timestamp_func) <: Array
+                  dt = missing
+                  for func in fname2timestamp_func
+                    try
+                      dt = func(file)
+                      if dt !== missing
+                        break
+                      end
+                    catch
+                      continue
+                    end
+                  end
+                else
+                  dt = fname2timestamp_func(file)
+                end
               end
             end
             print(output_stream, dt)
@@ -227,3 +246,18 @@ find_closest_row(summary_fname::String, target_dt) = find_closest_row(CSV.read(s
 
 count_arraysize(x; delim=';') = ismissing(x) ? 0 : 1 + count(==(delim), x)
 array_tostring(x; delim=';') = join(x, delim)
+
+
+function get_ftype_copy(a,b; ftype=".txt", filter_func=nothing)
+  if splitext(a)[2] == ftype
+    @debug "----File: $(basename(a))"
+
+    if isnothing(filter_func) || filter_func(a)
+      cp(a,b)
+      open( joinpath(dirname(b), "old_filepath.txt"), "a") do f
+        write(f, a*"\n")
+      end
+    end
+    
+  end
+end
