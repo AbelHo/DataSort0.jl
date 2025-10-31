@@ -72,7 +72,7 @@ function tabulate_data(fol::String;
         break
       end
       println(stdout, "Files in $root")
-      for file in files
+      for file in files|>skiphiddenfiles
         file_ext = splitext(file)[2]
         if filetype == :all ||
             (filetype==:media && occursin(Regex(join( vcat(autypes,vidtypes), '|')), file_ext |> lowercase)) || 
@@ -105,6 +105,8 @@ function tabulate_data(fol::String;
           try
             if epoch
               dt = unix2datetime(parse(Int, fname_time)/1000 + timediff)
+            elseif fname2timestamp_func == false
+              dt = ""
             else
               if isnothing(fname2timestamp_func)
                 dt = DateTime(fname_time, fmt)
