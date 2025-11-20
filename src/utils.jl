@@ -154,7 +154,12 @@ function process_files_hierarchy_with_func(folname, outfolder, args...; verbose=
     for file in flist
         if isdir(file)
             @info "directory: $file"
-            mkpath(joinpath(outfolder, basename(file)))
+            try
+                isdir(joinpath(outfolder, basename(file))) || mkpath(joinpath(outfolder, basename(file)))
+            catch err
+                @warn "ERROR making directory"
+                # @error exception=(err, catch_backtrace())
+            end
             process_files_hierarchy_with_func( file, joinpath(outfolder, basename(file)), args...; 
                 func=func, verbose=verbose, flag_skiphiddenfiles=flag_skiphiddenfiles, kwargs...)
         else

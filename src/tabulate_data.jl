@@ -255,7 +255,33 @@ function get_ftype_copy(a,b; ftype=".txt", filter_func=nothing)
     @debug "----File: $(basename(a))"
 
     if isnothing(filter_func) || filter_func(a)
-      cp(a,b)
+      # Copy file content (overwrite if needed) then try to preserve metadata
+      try
+        cp(a, b; force=true)
+      catch err
+        @error("Failed copying $a -> $b: $err")
+        return
+      end
+
+      try
+        st = stat(a)
+        # Preserve permission bits where supported (no-op on many Windows setups)
+        try
+          chmod(b, st.mode)
+        catch
+          # ignore chmod errors
+        end
+        # Preserve access and modification times (round to integer seconds)
+        try
+          atime = Int(round(st.atime))
+          mtime = Int(round(st.mtime))
+          utime(b, atime, mtime)
+        catch
+          # ignore utime errors on unsupported platforms
+        end
+      catch err
+        @warn("Could not preserve metadata for $b: $err")
+      end
       open( joinpath(dirname(b), "old_filepath.txt"), "a") do f
         write(f, a*"\n")
       end

@@ -1,6 +1,7 @@
 using CSV, DataFrames
+using CategoricalArrays
 
-folder_labelfile = ""
+folder_labelfile = "temp/selection_files"
 label_colnames = ["Notes", "Note", "Type of bp"]
 
 dfs = DataFrame[]; fnames = String[]
@@ -29,7 +30,7 @@ map!(x-> (ismissing(x) || occursin("?", x)) ? "" : strip(x), labels, labels)
 # labels = filter(x-> !ismissing(x) && !occursin("?", x), labels)
 categories = labels |> CategoricalArray
 lc = categories .|> levelcode
-
+lc |> unique
 labels |> unique
 
 # write to file
@@ -37,7 +38,11 @@ open("temp/labels.txt", "w") do io
     println(io, join(labels |> unique, '\n'))
 end
 
-
+split_each = labels .|> x->lowercase.(strip.(split(x,'.')))
+all_labels = vcat(split_each...) |> unique |> sort
+open("temp/labels_selectionfile_split.txt", "w") do io
+    println(io, join(all_labels, '\n'))
+end
 
 CSV.write("temp/labels.csv", sort(DataFrame(label=labels, id=lc), :label))
 
@@ -69,10 +74,18 @@ summary_filepath = "temp/summary.csv"
 df = CSV.read(summary_filepath, DataFrame)
 filter!(row -> startswith(row.filename, "sel."), df)
 
+labels_raw = df.filename .|> x-> join(split(x, '.')[7:end-1], ".")
 labels = df.filename .|> x-> lowercase.(strip.(split(x,'.')[7:end-1])) #|> length #|> plot
 open("temp/labels_snipppet.txt", "w") do io
     println(io, join( (labels |> unique) .|> x-> join(x,"|"), '\n'))
 end
+
+# split_each = labels .|> x->lowercase.(strip.(split(x,'.')))
+all_labels = vcat(labels...) |> unique |> sort
+open("temp/labels_snippets_split.txt", "w") do io
+    println(io, join(all_labels, '\n'))
+end
+
 labels |> unique
 la = vcat(labels...) |> unique
 filter(x->occursin("harmonics", x), la)
