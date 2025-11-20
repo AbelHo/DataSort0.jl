@@ -80,7 +80,7 @@ function tabulate_data(fol::String;
             (filetype==:video && occursin(Regex(join( vidtypes, '|')), file_ext |> lowercase)) ||
             file_ext==filetype
 
-          print(output_stream, "$file$separator")
+          print(output_stream, "\"$file\"$separator")
           try
             dur = get_duration(joinpath(root,file))
             dur = ismissing(dur) ? "" : dur
